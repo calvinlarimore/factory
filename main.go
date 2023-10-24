@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+const (
+	host = "localhost"
+	port = 42069
+)
 
 func main() {
-	fmt.Println("Goodbye, World!")
+	StartServer(host, port)
 }
