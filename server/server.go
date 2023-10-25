@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -13,7 +13,8 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
-	"github.com/charmbracelet/wish/logging"
+	bm "github.com/charmbracelet/wish/bubbletea"
+	lm "github.com/charmbracelet/wish/logging"
 )
 
 func StartServer(host string, port int) {
@@ -21,14 +22,8 @@ func StartServer(host string, port int) {
 		wish.WithAddress(fmt.Sprintf("%s:%d", host, port)),
 		wish.WithHostKeyPath(".ssh/term_info_ed25519"),
 		wish.WithMiddleware(
-			client.Middleware(),
-			func(h ssh.Handler) ssh.Handler {
-				return func(s ssh.Session) {
-					wish.Println(s, "Hello, world!")
-					h(s)
-				}
-			},
-			logging.Middleware(),
+			bm.Middleware(client.TeaHandler),
+			lm.Middleware(),
 		),
 	)
 	if err != nil {
