@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/calvinlarimore/factory/server"
+	"github.com/calvinlarimore/factory/game"
 )
 
 const (
@@ -10,5 +10,6 @@ const (
 )
 
 func main() {
-	server.StartServer(host, port)
+	game.InitWorld()
+	game.StartServer(host, port)
 }

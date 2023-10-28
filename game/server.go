@@ -1,4 +1,4 @@
-package server
+package game
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/calvinlarimore/factory/client"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -17,12 +16,14 @@ import (
 	lm "github.com/charmbracelet/wish/logging"
 )
 
+var tickChannel = make(chan struct{})
+
 func StartServer(host string, port int) {
 	s, err := wish.NewServer(
 		wish.WithAddress(fmt.Sprintf("%s:%d", host, port)),
 		wish.WithHostKeyPath(".ssh/term_info_ed25519"),
 		wish.WithMiddleware(
-			bm.Middleware(client.TeaHandler),
+			bm.Middleware(teaHandler),
 			lm.Middleware(),
 		),
 	)
@@ -37,6 +38,22 @@ func StartServer(host string, port int) {
 		if err = s.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
 			log.Error("could not start server", "error", err)
 			done <- nil
+		}
+	}()
+
+	// ticker := time.NewTicker(time.Second / 20)
+	ticker := time.NewTicker(time.Second / 20)
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case t := <-ticker.C:
+				_ = t
+				// fmt.Println("Tick @", t)
+				Tick()
+				tickChannel <- struct{}{}
+			}
 		}
 	}()
 

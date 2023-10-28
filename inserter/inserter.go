@@ -5,14 +5,25 @@ type Insertable interface {
 	Insert(item int) bool
 }
 
-type inserter struct {
+type Inserter struct {
 	source      Insertable
 	destination Insertable
 
 	item int
+
+	rotation int
 }
 
-func (i *inserter) Tick() {
+func NewInserter(src Insertable, dest Insertable, rot int) Inserter {
+	return Inserter{
+		source:      src,
+		destination: dest,
+		item:        0,
+		rotation:    rot,
+	}
+}
+
+func (i *Inserter) Tick() {
 	if i.item == 0 {
 		i.item = i.source.Extract()
 	} else {
@@ -20,4 +31,16 @@ func (i *inserter) Tick() {
 			i.item = 0
 		}
 	}
+}
+
+func (i *Inserter) Draw() string {
+	return []string{"↑", "→", "↓", "←"}[i.rotation]
+}
+
+func (i *Inserter) SetSource(src Insertable) {
+	i.source = src
+}
+
+func (i *Inserter) SetDestination(dest Insertable) {
+	i.destination = dest
 }
