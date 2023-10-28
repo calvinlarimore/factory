@@ -1,14 +1,25 @@
 package machine
 
-type miner struct {
+type Miner struct {
 	buffer buffer
+
+	x, y int
 }
 
-func (m *miner) Tick() {
+func NewMiner(x, y int) *Miner {
+	return &Miner{
+		buffer: buffer{
+			item: 0, count: 0,
+		},
+		x: x, y: y,
+	}
+}
+
+func (m *Miner) Tick() {
 	m.buffer.count++
 }
 
-func (m *miner) Extract() int {
+func (m *Miner) Extract() int {
 	if m.buffer.count <= 0 {
 		return 0
 	}
@@ -17,6 +28,17 @@ func (m *miner) Extract() int {
 	return m.buffer.item
 }
 
-func (m *miner) Insert(item int) bool {
+func (m *Miner) Insert(item int) bool {
 	return false
+}
+
+func (m *Miner) Pos() (int, int) {
+	return m.x, m.y
+}
+
+func (m *Miner) Sprite() string {
+	s := "===" + "\n"
+	s += "==="
+
+	return s
 }
