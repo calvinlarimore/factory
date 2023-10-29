@@ -18,13 +18,13 @@ var buildings = []string{
 var hudPanelStyle = ui.NewPanelStyle()
 
 func toggleActive(c *Client, i int) bool {
-	if c.activeHudPanel == -1 {
+	if c.activeHudPanel == nonePanelIndex {
 		c.activeHudPanel = i
 		return true
 	}
 
 	if c.activeHudPanel == i {
-		c.activeHudPanel = -1
+		c.activeHudPanel = nonePanelIndex
 		c.hudCursor = 0
 		return true
 	}
@@ -38,8 +38,7 @@ func updateHud(c *Client, msg tea.KeyMsg) bool {
 		return toggleActive(c, buildingsPanelIndex)
 	}
 
-	if c.activeHudPanel != -1 {
-
+	if c.activeHudPanel != nonePanelIndex {
 		switch msg.String() {
 		case "up":
 			if c.hudCursor > 0 {
