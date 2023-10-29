@@ -15,7 +15,7 @@ var buildings = []string{
 	"Miner",
 }
 
-var hudPanel = ui.NewPanel()
+var hudPanelStyle = ui.NewPanelStyle()
 
 func toggleActive(c *Client, i int) bool {
 	if c.activeHudPanel == -1 {
@@ -73,7 +73,7 @@ func renderHud(c Client) string {
 		}
 	}
 
-	s := hudPanel.Render("Buildings", "b", b)
+	s := hudPanelStyle.Render("Buildings", "b", b)
 
 	return s
 }

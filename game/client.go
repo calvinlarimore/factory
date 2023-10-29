@@ -34,7 +34,7 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	return c, []tea.ProgramOption{tea.WithAltScreen()}
 }
 
-var panel = ui.NewPanel()
+var panelStyle = ui.NewPanelStyle()
 
 type Client struct {
 	ch chan struct{}
@@ -89,7 +89,7 @@ func (c Client) View() string {
 	s := "Your term is %s\n"
 	s += "Your window size is x: %d y: %d\n\n"
 	s += "Press 'q' to quit"
-	left := panel.Render("Terminal Info", "", fmt.Sprintf(s, c.term, c.width, c.height)) + "\n" +
+	left := panelStyle.Render("Terminal Info", "", fmt.Sprintf(s, c.term, c.width, c.height)) + "\n" +
 		renderHud(c)
 
 	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, belts)

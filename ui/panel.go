@@ -6,13 +6,13 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type Panel struct {
+type PanelStyle struct {
 	MainStyle  lipgloss.Style
 	TitleStyle lipgloss.Style
 }
 
-func NewPanel() Panel {
-	return Panel{
+func NewPanelStyle() PanelStyle {
+	return PanelStyle{
 		MainStyle: lipgloss.NewStyle().
 			Padding(0, 1).
 			Border(lipgloss.NormalBorder()).
@@ -23,7 +23,7 @@ func NewPanel() Panel {
 	}
 }
 
-func (p Panel) Render(title string, subtitle string, strs ...string) string {
+func (p PanelStyle) Render(title string, subtitle string, strs ...string) string {
 	var (
 		border lipgloss.Border = p.MainStyle.GetBorderStyle()
 		style  lipgloss.Style  = lipgloss.NewStyle().
