@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// TODO: Fix cp437 characters getting cut and broken
 func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []*belt.Belt) string {
 	line := strings.Repeat(".", width)
 	world := strings.Split((strings.Repeat(line+"\n", height-1) + line), "\n")
@@ -22,8 +21,7 @@ func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []
 			char := "?"
 
 			if b.Item() == 0 {
-				// char := []string{"▲", "►", "▼", "◄"}[b.Rotation()]
-				char = []string{"u", "r", "d", "l"}[b.Rotation()]
+				char = []string{"▲", "►", "▼", "◄"}[b.Rotation()]
 			} else {
 				char = getItemSprite(b.Item())
 			}
@@ -63,7 +61,7 @@ func Composite(world string, hudLeft string) string {
 }
 
 func visualIndex(str string, width int) int {
-	for i := 0; i < lipgloss.Width(str); i++ {
+	for i := lipgloss.Width(str); i >= 0; i-- {
 		if lipgloss.Width(str[:i]) == width {
 			return i
 		}
