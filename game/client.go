@@ -5,7 +5,6 @@ import (
 
 	"github.com/calvinlarimore/factory/render"
 	"github.com/calvinlarimore/factory/ui"
-	"github.com/calvinlarimore/factory/ui/hud"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -26,7 +25,8 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 		return nil, nil
 	}
 	c := Client{
-		ch:     tickChannel,
+		ch: tickChannel,
+
 		term:   pty.Term,
 		width:  pty.Window.Width,
 		height: pty.Window.Height,
@@ -37,12 +37,16 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 var panel = ui.NewPanel()
 
 type Client struct {
-	ch     chan struct{}
+	ch chan struct{}
+
 	term   string
 	width  int
 	height int
 
 	x, y int
+
+	activeHudPanel int
+	hudCursor      int
 }
 
 func (c Client) Init() tea.Cmd {
@@ -55,7 +59,7 @@ func (c Client) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		c.height = msg.Height
 		c.width = msg.Width
 	case tea.KeyMsg:
-		if hud.Update(msg) {
+		if updateHud(&c, msg) {
 			break
 		}
 
@@ -86,7 +90,7 @@ func (c Client) View() string {
 	s += "Your window size is x: %d y: %d\n\n"
 	s += "Press 'q' to quit"
 	left := panel.Render("Terminal Info", "", fmt.Sprintf(s, c.term, c.width, c.height)) + "\n" +
-		hud.View()
+		renderHud(c)
 
 	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, belts)
 
