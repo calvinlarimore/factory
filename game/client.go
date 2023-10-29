@@ -25,18 +25,18 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 		wish.Fatalln(s, "no active terminal, skipping")
 		return nil, nil
 	}
-	m := model{
+	c := Client{
 		ch:     tickChannel,
 		term:   pty.Term,
 		width:  pty.Window.Width,
 		height: pty.Window.Height,
 	}
-	return m, []tea.ProgramOption{tea.WithAltScreen()}
+	return c, []tea.ProgramOption{tea.WithAltScreen()}
 }
 
 var panel = ui.NewPanel()
 
-type model struct {
+type Client struct {
 	ch     chan struct{}
 	term   string
 	width  int
@@ -45,15 +45,15 @@ type model struct {
 	x, y int
 }
 
-func (m model) Init() tea.Cmd {
-	return waitForTick(m.ch)
+func (c Client) Init() tea.Cmd {
+	return waitForTick(c.ch)
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (c Client) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.height = msg.Height
-		m.width = msg.Width
+		c.height = msg.Height
+		c.width = msg.Width
 	case tea.KeyMsg:
 		if hud.Update(msg) {
 			break
@@ -63,32 +63,32 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		switch msg.String() {
 		case "up":
-			m.y--
+			c.y--
 		case "down":
-			m.y++
+			c.y++
 		case "left":
-			m.x--
+			c.x--
 		case "right":
-			m.x++
+			c.x++
 
 		case "q", "ctrl+c":
-			return m, tea.Quit
+			return c, tea.Quit
 		}
 	case tickMsg:
-		return m, waitForTick(m.ch)
+		return c, waitForTick(c.ch)
 	}
 
-	return m, nil
+	return c, nil
 }
 
-func (m model) View() string {
+func (c Client) View() string {
 	s := "Your term is %s\n"
 	s += "Your window size is x: %d y: %d\n\n"
 	s += "Press 'q' to quit"
-	left := panel.Render("Terminal Info", "", fmt.Sprintf(s, m.term, m.width, m.height)) + "\n" +
+	left := panel.Render("Terminal Info", "", fmt.Sprintf(s, c.term, c.width, c.height)) + "\n" +
 		hud.View()
 
-	world := render.RenderWorld(m.width, m.height, m.x, m.y, machines, belts)
+	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, belts)
 
 	return render.Composite(world, left)
 }
