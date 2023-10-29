@@ -63,8 +63,6 @@ func (c Client) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		}
 
-		fmt.Println(msg.String())
-
 		switch msg.String() {
 		case "up":
 			c.y--
@@ -78,6 +76,7 @@ func (c Client) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "ctrl+c":
 			return c, tea.Quit
 		}
+
 	case tickMsg:
 		return c, waitForTick(c.ch)
 	}

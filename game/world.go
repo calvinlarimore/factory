@@ -11,11 +11,6 @@ var inserters = []*inserter.Inserter{}
 var belts = []*belt.Belt{}
 
 func InitWorld() {
-	// belts = append(belts, belt.NewBelt(30, 2, 0))
-	// belts = append(belts, belt.NewBelt(35, 2, 1))
-	// belts = append(belts, belt.NewBelt(40, 2, 2))
-	// belts = append(belts, belt.NewBelt(45, 2, 3))
-
 	b := PlaceBelt(30, 5, 1)
 	PlaceBelt(31, 5, 1)
 
@@ -53,8 +48,4 @@ func Tick() {
 	for _, b := range belts {
 		b.Flush()
 	}
-}
-
-func Belts() []*belt.Belt {
-	return belts
 }

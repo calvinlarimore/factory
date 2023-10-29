@@ -41,7 +41,6 @@ func StartServer(host string, port int) {
 		}
 	}()
 
-	// ticker := time.NewTicker(time.Second / 20)
 	ticker := time.NewTicker(time.Second / 20)
 	go func() {
 		for {
