@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/calvinlarimore/factory/ui"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 const (
@@ -60,12 +61,21 @@ func updateHud(c *Client, msg tea.KeyMsg) bool {
 func renderHud(c Client) string {
 	b := ""
 	for i, e := range buildings {
-		// TODO: styling
+		var style lipgloss.Style
+
 		if c.activeHudPanel == buildingsPanelIndex && i == c.hudCursor {
-			b += "> " + e
+			style = lipgloss.NewStyle().
+				Background(lipgloss.ANSIColor(7)).
+				Foreground(lipgloss.ANSIColor(0))
 		} else {
-			b += e
+			style = lipgloss.NewStyle().
+				Background(lipgloss.ANSIColor(0)).
+				Foreground(lipgloss.ANSIColor(7))
 		}
+
+		b += style.
+			Width(hudPanelStyle.InnerWidth()).
+			Render(e)
 
 		if i < len(buildings)-1 {
 			b += "\n"

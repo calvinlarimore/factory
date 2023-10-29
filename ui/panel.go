@@ -58,3 +58,7 @@ func (p PanelStyle) Render(title string, subtitle string, strs ...string) string
 
 	return top + "\n" + main
 }
+
+func (p PanelStyle) InnerWidth() int {
+	return p.MainStyle.GetWidth() - p.MainStyle.GetHorizontalPadding()
+}
