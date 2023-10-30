@@ -2,10 +2,12 @@ package game
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/calvinlarimore/factory/render"
 	"github.com/calvinlarimore/factory/ui"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
 )
@@ -30,7 +32,14 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 		term:   pty.Term,
 		width:  pty.Window.Width,
 		height: pty.Window.Height,
+
+		name:  s.User(),
+		color: lipgloss.ANSIColor(rand.Intn(5) + 1),
 	}
+
+	players[s.User()] = &c
+	fmt.Printf("%v\n", players)
+
 	return c, []tea.ProgramOption{tea.WithAltScreen()}
 }
 
@@ -42,6 +51,9 @@ type Client struct {
 	term   string
 	width  int
 	height int
+
+	name  string
+	color lipgloss.TerminalColor
 
 	x, y int
 
@@ -81,6 +93,7 @@ func (c Client) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return c, waitForTick(c.ch)
 	}
 
+	players[c.name] = &c // Theres probably a better way to do this
 	return c, nil
 }
 
@@ -91,7 +104,21 @@ func (c Client) View() string {
 	left := panelStyle.Render("Terminal Info", "", fmt.Sprintf(s, c.term, c.width, c.height)) + "\n" +
 		renderHud(c)
 
-	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, belts)
+	playerInfos := make([]render.PlayerInfo, len(players)-1)
+
+	i := 0
+	for name, client := range players {
+		if name != c.name {
+			playerInfos[i] = render.NewPlayerInfo(
+				client.x+client.width/2,
+				client.y+client.height/2,
+				client.color,
+			)
+			i++
+		}
+	}
+
+	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, belts, playerInfos)
 
 	return render.Composite(world, left)
 }

@@ -18,12 +18,27 @@ import (
 
 var tickChannel = make(chan struct{})
 
+var players = make(map[string]*Client, 0)
+
 func StartServer(host string, port int) {
 	s, err := wish.NewServer(
 		wish.WithAddress(fmt.Sprintf("%s:%d", host, port)),
 		wish.WithHostKeyPath(".ssh/term_info_ed25519"),
 		wish.WithMiddleware(
 			bm.Middleware(teaHandler),
+			func(h ssh.Handler) ssh.Handler {
+				return func(s ssh.Session) {
+					if players[s.User()] != nil {
+						wish.Errorf(s, "\nError: Player named \"%s\" already connected!\n\n", s.User())
+						s.Close()
+						return
+					}
+
+					h(s)
+
+					delete(players, s.User())
+				}
+			},
 			lm.Middleware(),
 		),
 	)

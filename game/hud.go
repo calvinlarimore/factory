@@ -1,6 +1,9 @@
 package game
 
 import (
+	"slices"
+	"strings"
+
 	"github.com/calvinlarimore/factory/ui"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -82,7 +85,23 @@ func renderHud(c Client) string {
 		}
 	}
 
-	s := hudPanelStyle.Render("Buildings", "b", b)
+	names := make([]string, 0, len(players))
+	for name := range players {
+		names = append(names, name)
+	}
+
+	slices.Sort(names)
+	for i, name := range names {
+		client := players[name]
+		style := lipgloss.NewStyle().
+			Foreground(client.color).
+			Bold(name == c.name)
+
+		names[i] = style.Inline(true).Render(name)
+	}
+
+	s := hudPanelStyle.Render("Players", "", strings.Join(names, "\n")) + "\n"
+	s += hudPanelStyle.Render("Buildings", "b", b)
 
 	return s
 }

@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	host = "localhost"
-	port = 42069
+	host = "0.0.0.0"
+	port = 11111
 )
 
 func main() {

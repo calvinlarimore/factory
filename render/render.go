@@ -8,7 +8,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []*belt.Belt) string {
+func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []*belt.Belt, players []PlayerInfo) string {
 	line := strings.Repeat(".", width)
 	world := strings.Split((strings.Repeat(line+"\n", height-1) + line), "\n")
 
@@ -44,6 +44,25 @@ func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []
 				}
 			}
 		}
+	}
+
+	for _, p := range players {
+		p.x -= cx
+		p.y -= cy
+
+		if p.x >= 0 && p.x < width && p.y >= 0 && p.y < height {
+			style := lipgloss.NewStyle().Foreground(p.color)
+			world[p.y] = splice(world[p.y], p.x, style.Inline(true).Render("☻"))
+		}
+	}
+
+	// Cursor
+	{
+		x := width / 2
+		y := height / 2
+
+		style := lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(15)).Bold(true)
+		world[y] = splice(world[y], x, style.Inline(true).Render("○"))
 	}
 
 	return strings.Join(world, "\n")
