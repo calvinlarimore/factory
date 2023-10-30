@@ -11,6 +11,7 @@ type Inserter struct {
 
 	item int
 
+	x, y     int
 	rotation int
 }
 
@@ -33,8 +34,16 @@ func (i *Inserter) Tick() {
 	}
 }
 
-func (i *Inserter) Draw() string {
-	return []string{"↑", "→", "↓", "←"}[i.rotation]
+func (i *Inserter) Item() int {
+	return i.item
+}
+
+func (i *Inserter) Pos() (int, int) {
+	return i.x, i.y
+}
+
+func (i *Inserter) Rotation() int {
+	return i.rotation
 }
 
 func (i *Inserter) SetSource(src Insertable) {

@@ -118,7 +118,7 @@ func (c Client) View() string {
 		}
 	}
 
-	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, belts, playerInfos)
+	world := render.RenderWorld(c.width, c.height, c.x, c.y, machines, inserters, belts, playerInfos)
 
 	return render.Composite(world, left)
 }

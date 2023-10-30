@@ -4,11 +4,12 @@ import (
 	"strings"
 
 	"github.com/calvinlarimore/factory/belt"
+	"github.com/calvinlarimore/factory/inserter"
 	"github.com/calvinlarimore/factory/machine"
 	"github.com/charmbracelet/lipgloss"
 )
 
-func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []*belt.Belt, players []PlayerInfo) string {
+func RenderWorld(width, height, cx, cy int, machines []machine.Machine, inserters []*inserter.Inserter, belts []*belt.Belt, players []PlayerInfo) string {
 	line := strings.Repeat(".", width)
 	world := strings.Split((strings.Repeat(line+"\n", height-1) + line), "\n")
 
@@ -24,6 +25,24 @@ func RenderWorld(width, height, cx, cy int, machines []machine.Machine, belts []
 				char = []string{"▲", "►", "▼", "◄"}[b.Rotation()]
 			} else {
 				char = getItemSprite(b.Item())
+			}
+
+			world[y] = splice(world[y], x, char)
+		}
+	}
+
+	for _, i := range inserters {
+		x, y := i.Pos()
+		x -= cx
+		y -= cy
+
+		if x >= 0 && x < width && y >= 0 && y < height {
+			char := "?"
+
+			if i.Item() == 0 {
+				char = []string{"↑", "→", "↓", "←"}[i.Rotation()]
+			} else {
+				char = getItemSprite(i.Item())
 			}
 
 			world[y] = splice(world[y], x, char)
